@@ -1,0 +1,29 @@
+{
+    "name": "array-batcher",
+    "version": "1.0.0",
+    "description": "Execute operations on or mapping conversions of JavaScript Arrays in predetermined batches. Batches can be of a fixed size, created from a desired number of batches, or constructed by iterating through the array and testing a predicate.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "test": "mocha --reporter spec"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/samwilkins333/array-batcher.git"
+    },
+    "author": "Sam Wilkins <samwilkins333@gmail.com> (http://www.samwilkins.me)",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/samwilkins333/array-batcher/issues"
+    },
+    "homepage": "https://github.com/samwilkins333/array-batcher#readme",
+    "devDependencies": {
+        "typescript": "^3.6.3"
+    },
+    "dependencies": {
+        "@types/node": "^12.7.5",
+        "chai": "^4.2.0",
+        "mocha": "^6.2.0"
+    }
+}
