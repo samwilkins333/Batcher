@@ -1,7 +1,7 @@
 export default class BatchedArray<T> {
     private readonly source: Array<T>;
 
-    public static create<T>(source?: Array<T>, detach = false) {
+    public static from<T>(source?: Array<T>, detach = false) {
         return new BatchedArray<T>(source, detach);
     }
 

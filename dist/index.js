@@ -54,7 +54,7 @@ var BatchedArray = /** @class */ (function () {
         var resolved = source || [];
         this.source = detach ? Array.from(resolved) : resolved;
     }
-    BatchedArray.create = function (source, detach) {
+    BatchedArray.from = function (source, detach) {
         if (detach === void 0) { detach = false; }
         return new BatchedArray(source, detach);
     };

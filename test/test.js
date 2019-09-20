@@ -4,7 +4,7 @@ const BatchedArray = require("../dist/index").default;
 describe("batchedMap function test", () => {
 
     it("should return mapped string array", () => {
-        const target = BatchedArray.create(["hello", "world", "hope", "you're", "listening"]);
+        const target = BatchedArray.from(["hello", "world", "hope", "you're", "listening"]);
         const results = target.batchedMap({
             batcher: { batchSize: 2 },
             converter: (words, context) => {

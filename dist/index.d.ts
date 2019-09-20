@@ -1,6 +1,6 @@
 export default class BatchedArray<T> {
     private readonly source;
-    static create<T>(source?: Array<T>, detach?: boolean): BatchedArray<T>;
+    static from<T>(source?: Array<T>, detach?: boolean): BatchedArray<T>;
     private constructor();
     readonly length: number;
     fixedBatch(batcher: FixedBatcher): T[][];
