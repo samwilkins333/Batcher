@@ -16,11 +16,12 @@ export default class BatchedArray<T> {
 
     fixedBatch(batcher: FixedBatcher): T[][] {
         const batches: T[][] = [];
+        const length = this.length;
         let i = 0;
         if ("batchSize" in batcher) {
             const { batchSize } = batcher;
-            while (i < this.length) {
-                const cap = Math.min(i + batchSize, this.length);
+            while (i < length) {
+                const cap = Math.min(i + batchSize, length);
                 batches.push(this.source.slice(i, i = cap));
             }
         } else if ("batchCount" in batcher) {
@@ -32,7 +33,7 @@ export default class BatchedArray<T> {
             if (batchCount === 1) {
                 return [this.source];
             }
-            if (batchCount >= this.length) {
+            if (batchCount >= length) {
                 return this.source.map(element => [element]);
             }
     

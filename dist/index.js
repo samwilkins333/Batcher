@@ -67,11 +67,12 @@ var BatchedArray = /** @class */ (function () {
     });
     BatchedArray.prototype.fixedBatch = function (batcher) {
         var batches = [];
+        var length = this.length;
         var i = 0;
         if ("batchSize" in batcher) {
             var batchSize = batcher.batchSize;
-            while (i < this.length) {
-                var cap = Math.min(i + batchSize, this.length);
+            while (i < length) {
+                var cap = Math.min(i + batchSize, length);
                 batches.push(this.source.slice(i, i = cap));
             }
         }
@@ -84,7 +85,7 @@ var BatchedArray = /** @class */ (function () {
             if (batchCount === 1) {
                 return [this.source];
             }
-            if (batchCount >= this.length) {
+            if (batchCount >= length) {
                 return this.source.map(function (element) { return [element]; });
             }
             var size = void 0;
