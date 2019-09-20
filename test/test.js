@@ -1,32 +1,30 @@
 const expect = require('chai').expect;
-const index = require("../dist/index");
+const BatchedArray = require("../dist/index").default;
 
 describe("batchedMap function test", () => {
 
     it("should return mapped string array", () => {
-        const target = ["hello", "world", "hope", "you're", "listening"];
-        const batcher = {
-            batchSize: 2
-        };
-        const converter = (words, context) => words.map(word => `(${word}) @ ${context.completedBatches}, ${context.remainingBatches}`);
-        const results = index.batchedMap(target, batcher, converter);
+        const target = new BatchedArray(["hello", "world", "hope", "you're", "listening"]);
+        const results = target.batchedMap(
+            { batchSize: 2 },
+            (words, context) => words.map(word => `(${word}) @ ${context.completedBatches}, ${context.remainingBatches}`)
+        );
         expect(results[2]).to.equal("(hope) @ 1, 2");
         expect(results.length).to.equal(target.length);
     });
 
     it("should return empty array", () => {
-        const target = [];
-        const batcher = {
-            batchCount: 3
-        };
-        const converter = (batch, context) => {
-            const output = [];
-            for (let element of batch) {
-                output.push(`I, (${element}), SHOULDN'T BE HERE!`);
+        const target = new BatchedArray();
+        const results = target.batchedMap(
+            { batchCount: 3 },
+            (batch, context) => {
+                const output = [];
+                for (let element of batch) {
+                    output.push(`I, (${element}), SHOULDN'T BE HERE!`);
+                }
+                return output;
             }
-            return output;
-        };
-        const results = index.batchedMap(target, batcher, converter);
+        );
         expect(results[2]).to.equal(undefined);
         expect(results.length).to.equal(target.length);
     });
@@ -36,7 +34,8 @@ describe("batchedMap function test", () => {
 describe('predicate batching test', () => {
 
     it("should return a dynamically batched list", () => {
-        const target = [{
+        const target = new BatchedArray([
+            {
                 message: "What",
                 size: 4
             },
@@ -64,8 +63,8 @@ describe('predicate batching test', () => {
                 message: "Ho",
                 size: 2
             },
-        ];
-        const batcher = {
+        ]);
+        const results = target.batch({
             initial: 0,
             executor: (element, accumulator) => {
                 const threshold = 7;
@@ -76,8 +75,7 @@ describe('predicate batching test', () => {
                 }
                 return { createNewBatch, updated };
             }
-        };
-        const results = index.batch(target, batcher); 
+        }); 
         expect(results.length).to.equal(5);
         expect(results[0].length).to.equal(1);
         expect(results[1].length).to.equal(2);
