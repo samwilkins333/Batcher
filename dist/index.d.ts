@@ -1,19 +1,40 @@
 export default class BatchedArray<T> {
     private readonly source;
-    constructor(source?: Array<T>, detach?: boolean);
+    static create<T>(source?: Array<T>, detach?: boolean): BatchedArray<T>;
+    private constructor();
     readonly length: number;
     fixedBatch(batcher: FixedBatcher): T[][];
     predicateBatch<A = undefined>(batcher: PredicateBatcherSync<T, A>): T[][];
     predicateBatchAsync<A = undefined>(batcher: BatcherAsync<T, A>): Promise<T[][]>;
     batch<A = undefined>(batcher: BatcherSync<T, A>): T[][];
     batchAsync<A = undefined>(batcher: Batcher<T, A>): T[][] | Promise<T[][]>;
-    batchedForEach<A = undefined>(batcher: BatcherSync<T, A>, handler: BatchHandlerSync<T>): void;
-    batchedMap<O, A = undefined>(batcher: BatcherSync<T, A>, handler: BatchConverterSync<T, O>): O[];
-    batchedForEachAsync<A = undefined>(batcher: Batcher<T, A>, handler: BatchHandler<T>): Promise<void>;
-    batchedMapAsync<O, A = undefined>(target: Array<T>, batcher: Batcher<T, A>, handler: BatchConverter<T, O>): Promise<O[]>;
+    batchedForEach<A = undefined>(specifications: {
+        batcher: BatcherSync<T, A>;
+        handler: BatchHandlerSync<T>;
+    }): void;
+    batchedMap<O, A = undefined>(specifications: {
+        batcher: BatcherSync<T, A>;
+        converter: BatchConverterSync<T, O>;
+    }): O[];
+    batchedForEachAsync<A = undefined>(specifications: {
+        batcher: Batcher<T, A>;
+        handler: BatchHandler<T>;
+    }): Promise<void>;
+    batchedMapAsync<O, A = undefined>(specifications: {
+        batcher: Batcher<T, A>;
+        converter: BatchConverter<T, O>;
+    }): Promise<O[]>;
     private convert;
-    batchedForEachInterval<A = undefined>(target: Array<T>, batcher: Batcher<T, A>, handler: BatchHandler<T>, interval: Interval): Promise<void>;
-    batchedMapInterval<O, A = undefined>(target: Array<T>, batcher: Batcher<T, A>, handler: BatchConverter<T, O>, interval: Interval): Promise<O[]>;
+    batchedForEachInterval<A = undefined>(specifications: {
+        batcher: Batcher<T, A>;
+        handler: BatchHandler<T>;
+        interval: Interval;
+    }): Promise<void>;
+    batchedMapInterval<O, A = undefined>(specifications: {
+        batcher: Batcher<T, A>;
+        converter: BatchConverter<T, O>;
+        interval: Interval;
+    }): Promise<O[]>;
 }
 export interface BatchContext {
     completedBatches: number;

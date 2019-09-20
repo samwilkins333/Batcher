@@ -1,7 +1,11 @@
 export default class BatchedArray<T> {
     private readonly source: Array<T>;
 
-    constructor(source?: Array<T>, detach = false) {
+    public static create<T>(source?: Array<T>, detach = false) {
+        return new BatchedArray<T>(source, detach);
+    }
+
+    private constructor(source?: Array<T>, detach = false) {
         const resolved = source || [];
         this.source = detach ? Array.from(resolved) : resolved;
     }
@@ -113,8 +117,9 @@ export default class BatchedArray<T> {
         }
     };
 
-    batchedForEach<A = undefined>(batcher: BatcherSync<T, A>, handler: BatchHandlerSync<T>): void {
+    batchedForEach<A = undefined>(specifications: { batcher: BatcherSync<T, A>, handler: BatchHandlerSync<T> }): void {
         if (this.length) {
+            const { batcher, handler } = specifications;
             let completed = 0;
             const batches = this.batch(batcher);
             const quota = batches.length;
@@ -129,10 +134,11 @@ export default class BatchedArray<T> {
         }
     };
 
-    batchedMap<O, A = undefined>(batcher: BatcherSync<T, A>, handler: BatchConverterSync<T, O>): O[] {
+    batchedMap<O, A = undefined>(specifications: { batcher: BatcherSync<T, A>, converter: BatchConverterSync<T, O> }): O[] {
         if (!this.length) {
             return [];
         }
+        const { batcher, converter } = specifications;
         let collector: O[] = [];
         let completed = 0;
         const batches = this.batch(batcher);
@@ -142,14 +148,15 @@ export default class BatchedArray<T> {
                 completedBatches: completed,
                 remainingBatches: quota - completed,
             };
-            handler(batch, context).forEach(convert => collector.push(convert));
+            converter(batch, context).forEach(convert => collector.push(convert));
             completed++;
         }
         return collector;
     };
 
-    async batchedForEachAsync<A = undefined>(batcher: Batcher<T, A>, handler: BatchHandler<T>): Promise<void> {
+    async batchedForEachAsync<A = undefined>(specifications: { batcher: Batcher<T, A>, handler: BatchHandler<T> }): Promise<void> {
         if (this.length) {
+            const { batcher, handler } = specifications;
             let completed = 0;
             const batches = await this.batchAsync(batcher);
             const quota = batches.length;
@@ -164,10 +171,11 @@ export default class BatchedArray<T> {
         }
     };
 
-    async batchedMapAsync<O, A = undefined>(target: Array<T>, batcher: Batcher<T, A>, handler: BatchConverter<T, O>): Promise<O[]> {
-        if (!target.length) {
+    async batchedMapAsync<O, A = undefined>(specifications: { batcher: Batcher<T, A>, converter: BatchConverter<T, O> }): Promise<O[]> {
+        if (!this.length) {
             return [];
         }
+        const { batcher, converter } = specifications;
         let collector: O[] = [];
         let completed = 0;
         const batches = await this.batchAsync(batcher);
@@ -177,7 +185,7 @@ export default class BatchedArray<T> {
                 completedBatches: completed,
                 remainingBatches: quota - completed,
             };
-            (await handler(batch, context)).forEach(convert => collector.push(convert));
+            (await converter(batch, context)).forEach(convert => collector.push(convert));
             completed++;
         }
         return collector;
@@ -196,10 +204,11 @@ export default class BatchedArray<T> {
         }
     };
 
-    async batchedForEachInterval<A = undefined>(target: Array<T>, batcher: Batcher<T, A>, handler: BatchHandler<T>, interval: Interval): Promise<void> {
-        if (!target.length) {
+    async batchedForEachInterval<A = undefined>(specifications: { batcher: Batcher<T, A>, handler: BatchHandler<T>, interval: Interval}): Promise<void> {
+        if (!this.length) {
             return;
         }
+        const { batcher, handler, interval } = specifications;
         const batches = await this.batchAsync(batcher);
         const quota = batches.length;
         return new Promise<void>(async resolve => {
@@ -226,10 +235,11 @@ export default class BatchedArray<T> {
         });
     };
 
-    async batchedMapInterval<O, A = undefined>(target: Array<T>, batcher: Batcher<T, A>, handler: BatchConverter<T, O>, interval: Interval): Promise<O[]> {
-        if (!target.length) {
+    async batchedMapInterval<O, A = undefined>(specifications: { batcher: Batcher<T, A>, converter: BatchConverter<T, O>, interval: Interval }): Promise<O[]> {
+        if (!this.length) {
             return [];
         }
+        const { batcher, converter, interval } = specifications;
         let collector: O[] = [];
         const batches = await this.batchAsync(batcher);
         const quota = batches.length;
@@ -245,7 +255,7 @@ export default class BatchedArray<T> {
                             completedBatches: completed,
                             remainingBatches: quota - completed,
                         };
-                        (await handler(batch, context)).forEach(convert => collector.push(convert));
+                        (await converter(batch, context)).forEach(convert => collector.push(convert));
                         resolve();
                     }, this.convert(interval));
                 });

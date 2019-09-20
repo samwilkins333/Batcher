@@ -4,27 +4,30 @@ const BatchedArray = require("../dist/index").default;
 describe("batchedMap function test", () => {
 
     it("should return mapped string array", () => {
-        const target = new BatchedArray(["hello", "world", "hope", "you're", "listening"]);
-        const results = target.batchedMap(
-            { batchSize: 2 },
-            (words, context) => words.map(word => `(${word}) @ ${context.completedBatches}, ${context.remainingBatches}`)
-        );
+        const target = BatchedArray.create(["hello", "world", "hope", "you're", "listening"]);
+        const results = target.batchedMap({
+            batcher: { batchSize: 2 },
+            converter: (words, context) => {
+                const { completedBatches, remainingBatches } = context;
+                return words.map(word => `(${word}) @ ${completedBatches}, ${remainingBatches}`);
+            }
+        });
         expect(results[2]).to.equal("(hope) @ 1, 2");
         expect(results.length).to.equal(target.length);
     });
 
     it("should return empty array", () => {
         const target = new BatchedArray();
-        const results = target.batchedMap(
-            { batchCount: 3 },
-            (batch, context) => {
+        const results = target.batchedMap({
+            batcher: { batchCount: 3 },
+            converter: (batch) => {
                 const output = [];
                 for (let element of batch) {
                     output.push(`I, (${element}), SHOULDN'T BE HERE!`);
                 }
                 return output;
             }
-        );
+        });
         expect(results[2]).to.equal(undefined);
         expect(results.length).to.equal(target.length);
     });

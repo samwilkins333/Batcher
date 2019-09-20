@@ -54,6 +54,10 @@ var BatchedArray = /** @class */ (function () {
         var resolved = source || [];
         this.source = detach ? Array.from(resolved) : resolved;
     }
+    BatchedArray.create = function (source, detach) {
+        if (detach === void 0) { detach = false; }
+        return new BatchedArray(source, detach);
+    };
     Object.defineProperty(BatchedArray.prototype, "length", {
         get: function () {
             return this.source.length;
@@ -188,8 +192,9 @@ var BatchedArray = /** @class */ (function () {
         }
     };
     ;
-    BatchedArray.prototype.batchedForEach = function (batcher, handler) {
+    BatchedArray.prototype.batchedForEach = function (specifications) {
         if (this.length) {
+            var batcher = specifications.batcher, handler = specifications.handler;
             var completed = 0;
             var batches = this.batch(batcher);
             var quota = batches.length;
@@ -205,10 +210,11 @@ var BatchedArray = /** @class */ (function () {
         }
     };
     ;
-    BatchedArray.prototype.batchedMap = function (batcher, handler) {
+    BatchedArray.prototype.batchedMap = function (specifications) {
         if (!this.length) {
             return [];
         }
+        var batcher = specifications.batcher, converter = specifications.converter;
         var collector = [];
         var completed = 0;
         var batches = this.batch(batcher);
@@ -219,19 +225,20 @@ var BatchedArray = /** @class */ (function () {
                 completedBatches: completed,
                 remainingBatches: quota - completed,
             };
-            handler(batch, context).forEach(function (convert) { return collector.push(convert); });
+            converter(batch, context).forEach(function (convert) { return collector.push(convert); });
             completed++;
         }
         return collector;
     };
     ;
-    BatchedArray.prototype.batchedForEachAsync = function (batcher, handler) {
+    BatchedArray.prototype.batchedForEachAsync = function (specifications) {
         return __awaiter(this, void 0, void 0, function () {
-            var completed, batches, quota, _i, batches_3, batch, context;
+            var batcher, handler, completed, batches, quota, _i, batches_3, batch, context;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         if (!this.length) return [3 /*break*/, 5];
+                        batcher = specifications.batcher, handler = specifications.handler;
                         completed = 0;
                         return [4 /*yield*/, this.batchAsync(batcher)];
                     case 1:
@@ -260,15 +267,16 @@ var BatchedArray = /** @class */ (function () {
         });
     };
     ;
-    BatchedArray.prototype.batchedMapAsync = function (target, batcher, handler) {
+    BatchedArray.prototype.batchedMapAsync = function (specifications) {
         return __awaiter(this, void 0, void 0, function () {
-            var collector, completed, batches, quota, _i, batches_4, batch, context;
+            var batcher, converter, collector, completed, batches, quota, _i, batches_4, batch, context;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!target.length) {
+                        if (!this.length) {
                             return [2 /*return*/, []];
                         }
+                        batcher = specifications.batcher, converter = specifications.converter;
                         collector = [];
                         completed = 0;
                         return [4 /*yield*/, this.batchAsync(batcher)];
@@ -284,7 +292,7 @@ var BatchedArray = /** @class */ (function () {
                             completedBatches: completed,
                             remainingBatches: quota - completed,
                         };
-                        return [4 /*yield*/, handler(batch, context)];
+                        return [4 /*yield*/, converter(batch, context)];
                     case 3:
                         (_a.sent()).forEach(function (convert) { return collector.push(convert); });
                         completed++;
@@ -298,16 +306,17 @@ var BatchedArray = /** @class */ (function () {
         });
     };
     ;
-    BatchedArray.prototype.batchedForEachInterval = function (target, batcher, handler, interval) {
+    BatchedArray.prototype.batchedForEachInterval = function (specifications) {
         return __awaiter(this, void 0, void 0, function () {
-            var batches, quota;
+            var batcher, handler, interval, batches, quota;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!target.length) {
+                        if (!this.length) {
                             return [2 /*return*/];
                         }
+                        batcher = specifications.batcher, handler = specifications.handler, interval = specifications.interval;
                         return [4 /*yield*/, this.batchAsync(batcher)];
                     case 1:
                         batches = _a.sent();
@@ -375,16 +384,17 @@ var BatchedArray = /** @class */ (function () {
         });
     };
     ;
-    BatchedArray.prototype.batchedMapInterval = function (target, batcher, handler, interval) {
+    BatchedArray.prototype.batchedMapInterval = function (specifications) {
         return __awaiter(this, void 0, void 0, function () {
-            var collector, batches, quota;
+            var batcher, converter, interval, collector, batches, quota;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!target.length) {
+                        if (!this.length) {
                             return [2 /*return*/, []];
                         }
+                        batcher = specifications.batcher, converter = specifications.converter, interval = specifications.interval;
                         collector = [];
                         return [4 /*yield*/, this.batchAsync(batcher)];
                     case 1:
@@ -415,7 +425,7 @@ var BatchedArray = /** @class */ (function () {
                                                                                         completedBatches: completed,
                                                                                         remainingBatches: quota - completed,
                                                                                     };
-                                                                                    return [4 /*yield*/, handler(batch, context)];
+                                                                                    return [4 /*yield*/, converter(batch, context)];
                                                                                 case 1:
                                                                                     (_a.sent()).forEach(function (convert) { return collector.push(convert); });
                                                                                     resolve();
