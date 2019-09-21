@@ -36,36 +36,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var BatchedArray = /** @class */ (function () {
-    function BatchedArray(source, detach) {
-        if (detach === void 0) { detach = false; }
-        this.convert = function (interval) {
-            var magnitude = interval.magnitude, unit = interval.unit;
-            switch (unit) {
-                default:
-                case TimeUnit.Milliseconds:
-                    return magnitude;
-                case TimeUnit.Seconds:
-                    return magnitude * 1000;
-                case TimeUnit.Minutes:
-                    return magnitude * 1000 * 60;
-            }
-        };
-        var resolved = source || [];
-        this.source = detach ? Array.from(resolved) : resolved;
+var BatcherAgent = /** @class */ (function () {
+    function BatcherAgent(input) {
+        this.input = input;
     }
-    BatchedArray.from = function (source, detach) {
-        if (detach === void 0) { detach = false; }
-        return new BatchedArray(source, detach);
-    };
-    Object.defineProperty(BatchedArray.prototype, "length", {
+    Object.defineProperty(BatcherAgent.prototype, "length", {
         get: function () {
-            return this.source.length;
+            return this.input.length;
         },
         enumerable: true,
         configurable: true
     });
-    BatchedArray.prototype.fixedBatch = function (batcher) {
+    BatcherAgent.prototype.fixedBatch = function (batcher) {
         var batches = [];
         var length = this.length;
         var i = 0;
@@ -73,7 +55,7 @@ var BatchedArray = /** @class */ (function () {
             var batchSize = batcher.batchSize;
             while (i < length) {
                 var cap = Math.min(i + batchSize, length);
-                batches.push(this.source.slice(i, i = cap));
+                batches.push(this.input.slice(i, i = cap));
             }
         }
         else if ("batchCount" in batcher) {
@@ -83,22 +65,22 @@ var BatchedArray = /** @class */ (function () {
                 throw new Error("Batch count must be a positive integer!");
             }
             if (batchCount === 1) {
-                return [this.source];
+                return [this.input];
             }
             if (batchCount >= length) {
-                return this.source.map(function (element) { return [element]; });
+                return this.input.map(function (element) { return [element]; });
             }
             var size = void 0;
             if (length % batchCount === 0) {
                 size = Math.floor(length / batchCount);
                 while (i < length) {
-                    batches.push(this.source.slice(i, i += size));
+                    batches.push(this.input.slice(i, i += size));
                 }
             }
             else if (resolved === Mode.Balanced) {
                 while (i < length) {
                     size = Math.ceil((length - i) / batchCount--);
-                    batches.push(this.source.slice(i, i += size));
+                    batches.push(this.input.slice(i, i += size));
                 }
             }
             else {
@@ -108,20 +90,20 @@ var BatchedArray = /** @class */ (function () {
                     size--;
                 }
                 while (i < size * batchCount) {
-                    batches.push(this.source.slice(i, i += size));
+                    batches.push(this.input.slice(i, i += size));
                 }
-                batches.push(this.source.slice(size * batchCount));
+                batches.push(this.input.slice(size * batchCount));
             }
         }
         return batches;
     };
     ;
-    BatchedArray.prototype.predicateBatch = function (batcher) {
+    BatcherAgent.prototype.predicateBatch = function (batcher) {
         var batches = [];
         var batch = [];
         var executor = batcher.executor, initial = batcher.initial;
         var accumulator = initial;
-        for (var _i = 0, _a = this.source; _i < _a.length; _i++) {
+        for (var _i = 0, _a = this.input; _i < _a.length; _i++) {
             var element = _a[_i];
             var _b = executor(element, accumulator), updated = _b.updated, createNewBatch = _b.createNewBatch;
             accumulator = updated;
@@ -137,7 +119,7 @@ var BatchedArray = /** @class */ (function () {
         return batches;
     };
     ;
-    BatchedArray.prototype.predicateBatchAsync = function (batcher) {
+    BatcherAgent.prototype.predicateBatchAsync = function (batcher) {
         return __awaiter(this, void 0, void 0, function () {
             var batches, batch, executorAsync, initial, accumulator, _i, _a, element, _b, updated, createNewBatch;
             return __generator(this, function (_c) {
@@ -147,7 +129,7 @@ var BatchedArray = /** @class */ (function () {
                         batch = [];
                         executorAsync = batcher.executorAsync, initial = batcher.initial;
                         accumulator = initial;
-                        _i = 0, _a = this.source;
+                        _i = 0, _a = this.input;
                         _c.label = 1;
                     case 1:
                         if (!(_i < _a.length)) return [3 /*break*/, 4];
@@ -175,7 +157,7 @@ var BatchedArray = /** @class */ (function () {
         });
     };
     ;
-    BatchedArray.prototype.batch = function (batcher) {
+    BatcherAgent.prototype.batch = function (batcher) {
         if ("executor" in batcher) {
             return this.predicateBatch(batcher);
         }
@@ -184,7 +166,7 @@ var BatchedArray = /** @class */ (function () {
         }
     };
     ;
-    BatchedArray.prototype.batchAsync = function (batcher) {
+    BatcherAgent.prototype.batchAsync = function (batcher) {
         if ("executorAsync" in batcher) {
             return this.predicateBatchAsync(batcher);
         }
@@ -193,17 +175,71 @@ var BatchedArray = /** @class */ (function () {
         }
     };
     ;
-    BatchedArray.prototype.batchedForEach = function (specifications) {
-        if (this.length) {
-            var batcher = specifications.batcher, handler = specifications.handler;
+    return BatcherAgent;
+}());
+exports.BatcherAgent = BatcherAgent;
+var BatchedArray = /** @class */ (function () {
+    function BatchedArray(batches) {
+        this.source = [];
+        this.convert = function (interval) {
+            var magnitude = interval.magnitude, unit = interval.unit;
+            switch (unit) {
+                default:
+                case TimeUnit.Milliseconds:
+                    return magnitude;
+                case TimeUnit.Seconds:
+                    return magnitude * 1000;
+                case TimeUnit.Minutes:
+                    return magnitude * 1000 * 60;
+            }
+        };
+        this.batches = batches;
+    }
+    BatchedArray.from = function (source, batcher) {
+        var copy = Array.from(source);
+        var batched = new BatchedArray(new BatcherAgent(copy).batch(batcher));
+        batched.source = copy;
+        return batched;
+    };
+    BatchedArray.fromAsync = function (source, batcher) {
+        return __awaiter(this, void 0, void 0, function () {
+            var copy, batched, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        copy = Array.from(source);
+                        _a = BatchedArray.bind;
+                        return [4 /*yield*/, new BatcherAgent(copy).batchAsync(batcher)];
+                    case 1:
+                        batched = new (_a.apply(BatchedArray, [void 0, _b.sent()]))();
+                        batched.source = copy;
+                        return [2 /*return*/, batched];
+                }
+            });
+        });
+    };
+    Object.defineProperty(BatchedArray.prototype, "batchCount", {
+        get: function () {
+            return this.batches.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BatchedArray.prototype, "elementCount", {
+        get: function () {
+            return this.source.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BatchedArray.prototype.batchedForEach = function (handler) {
+        if (this.batchCount) {
             var completed = 0;
-            var batches = this.batch(batcher);
-            var quota = batches.length;
-            for (var _i = 0, batches_1 = batches; _i < batches_1.length; _i++) {
-                var batch = batches_1[_i];
+            for (var _i = 0, _a = this.batches; _i < _a.length; _i++) {
+                var batch = _a[_i];
                 var context = {
                     completedBatches: completed,
-                    remainingBatches: quota - completed,
+                    remainingBatches: this.batchCount - completed,
                 };
                 handler(batch, context);
                 completed++;
@@ -211,20 +247,17 @@ var BatchedArray = /** @class */ (function () {
         }
     };
     ;
-    BatchedArray.prototype.batchedMap = function (specifications) {
-        if (!this.length) {
+    BatchedArray.prototype.batchedMap = function (converter) {
+        if (!this.batchCount) {
             return [];
         }
-        var batcher = specifications.batcher, converter = specifications.converter;
         var collector = [];
         var completed = 0;
-        var batches = this.batch(batcher);
-        var quota = batches.length;
-        for (var _i = 0, batches_2 = batches; _i < batches_2.length; _i++) {
-            var batch = batches_2[_i];
+        for (var _i = 0, _a = this.batches; _i < _a.length; _i++) {
+            var batch = _a[_i];
             var context = {
                 completedBatches: completed,
-                remainingBatches: quota - completed,
+                remainingBatches: this.batchCount - completed,
             };
             converter(batch, context).forEach(function (convert) { return collector.push(convert); });
             completed++;
@@ -232,233 +265,208 @@ var BatchedArray = /** @class */ (function () {
         return collector;
     };
     ;
-    BatchedArray.prototype.batchedForEachAsync = function (specifications) {
+    BatchedArray.prototype.batchedForEachAsync = function (handler) {
         return __awaiter(this, void 0, void 0, function () {
-            var batcher, handler, completed, batches, quota, _i, batches_3, batch, context;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var completed, _i, _a, batch, context;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        if (!this.length) return [3 /*break*/, 5];
-                        batcher = specifications.batcher, handler = specifications.handler;
+                        if (!this.batchCount) return [3 /*break*/, 4];
                         completed = 0;
-                        return [4 /*yield*/, this.batchAsync(batcher)];
+                        _i = 0, _a = this.batches;
+                        _b.label = 1;
                     case 1:
-                        batches = _a.sent();
-                        quota = batches.length;
-                        _i = 0, batches_3 = batches;
-                        _a.label = 2;
-                    case 2:
-                        if (!(_i < batches_3.length)) return [3 /*break*/, 5];
-                        batch = batches_3[_i];
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        batch = _a[_i];
                         context = {
                             completedBatches: completed,
-                            remainingBatches: quota - completed,
+                            remainingBatches: this.batchCount - completed,
                         };
                         return [4 /*yield*/, handler(batch, context)];
-                    case 3:
-                        _a.sent();
+                    case 2:
+                        _b.sent();
                         completed++;
-                        _a.label = 4;
-                    case 4:
+                        _b.label = 3;
+                    case 3:
                         _i++;
-                        return [3 /*break*/, 2];
-                    case 5: return [2 /*return*/];
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
     };
     ;
-    BatchedArray.prototype.batchedMapAsync = function (specifications) {
+    BatchedArray.prototype.batchedMapAsync = function (converter) {
         return __awaiter(this, void 0, void 0, function () {
-            var batcher, converter, collector, completed, batches, quota, _i, batches_4, batch, context;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var collector, completed, _i, _a, batch, context;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        if (!this.length) {
+                        if (!this.batchCount) {
                             return [2 /*return*/, []];
                         }
-                        batcher = specifications.batcher, converter = specifications.converter;
                         collector = [];
                         completed = 0;
-                        return [4 /*yield*/, this.batchAsync(batcher)];
+                        _i = 0, _a = this.batches;
+                        _b.label = 1;
                     case 1:
-                        batches = _a.sent();
-                        quota = batches.length;
-                        _i = 0, batches_4 = batches;
-                        _a.label = 2;
-                    case 2:
-                        if (!(_i < batches_4.length)) return [3 /*break*/, 5];
-                        batch = batches_4[_i];
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        batch = _a[_i];
                         context = {
                             completedBatches: completed,
-                            remainingBatches: quota - completed,
+                            remainingBatches: this.batchCount - completed,
                         };
                         return [4 /*yield*/, converter(batch, context)];
-                    case 3:
-                        (_a.sent()).forEach(function (convert) { return collector.push(convert); });
+                    case 2:
+                        (_b.sent()).forEach(function (convert) { return collector.push(convert); });
                         completed++;
-                        _a.label = 4;
-                    case 4:
+                        _b.label = 3;
+                    case 3:
                         _i++;
-                        return [3 /*break*/, 2];
-                    case 5: return [2 /*return*/, collector];
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/, collector];
                 }
             });
         });
     };
     ;
-    BatchedArray.prototype.batchedForEachInterval = function (specifications) {
+    BatchedArray.prototype.batchedForEachInterval = function (interval, handler) {
         return __awaiter(this, void 0, void 0, function () {
-            var batcher, handler, interval, batches, quota;
             var _this = this;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!this.length) {
-                            return [2 /*return*/];
-                        }
-                        batcher = specifications.batcher, handler = specifications.handler, interval = specifications.interval;
-                        return [4 /*yield*/, this.batchAsync(batcher)];
-                    case 1:
-                        batches = _a.sent();
-                        quota = batches.length;
-                        return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-                                var iterator, completed, _loop_1, state_1;
-                                var _this = this;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0:
-                                            iterator = batches[Symbol.iterator]();
-                                            completed = 0;
-                                            _loop_1 = function () {
-                                                var next;
-                                                return __generator(this, function (_a) {
-                                                    switch (_a.label) {
-                                                        case 0:
-                                                            next = iterator.next();
-                                                            return [4 /*yield*/, new Promise(function (resolve) {
-                                                                    setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                                                                        var batch, context;
-                                                                        return __generator(this, function (_a) {
-                                                                            switch (_a.label) {
-                                                                                case 0:
-                                                                                    batch = next.value;
-                                                                                    context = {
-                                                                                        completedBatches: completed,
-                                                                                        remainingBatches: quota - completed,
-                                                                                    };
-                                                                                    return [4 /*yield*/, handler(batch, context)];
-                                                                                case 1:
-                                                                                    _a.sent();
-                                                                                    resolve();
-                                                                                    return [2 /*return*/];
-                                                                            }
-                                                                        });
-                                                                    }); }, _this.convert(interval));
-                                                                })];
-                                                        case 1:
-                                                            _a.sent();
-                                                            if (++completed === quota) {
-                                                                return [2 /*return*/, "break"];
-                                                            }
-                                                            return [2 /*return*/];
-                                                    }
-                                                });
-                                            };
-                                            _a.label = 1;
-                                        case 1:
-                                            if (!true) return [3 /*break*/, 3];
-                                            return [5 /*yield**/, _loop_1()];
-                                        case 2:
-                                            state_1 = _a.sent();
-                                            if (state_1 === "break")
-                                                return [3 /*break*/, 3];
-                                            return [3 /*break*/, 1];
-                                        case 3:
-                                            resolve();
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            }); })];
+                if (!this.batchCount) {
+                    return [2 /*return*/];
                 }
+                return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
+                        var iterator, completed, _loop_1, this_1, state_1;
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    iterator = this.batches[Symbol.iterator]();
+                                    completed = 0;
+                                    _loop_1 = function () {
+                                        var next;
+                                        return __generator(this, function (_a) {
+                                            switch (_a.label) {
+                                                case 0:
+                                                    next = iterator.next();
+                                                    return [4 /*yield*/, new Promise(function (resolve) {
+                                                            setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
+                                                                var batch, context;
+                                                                return __generator(this, function (_a) {
+                                                                    switch (_a.label) {
+                                                                        case 0:
+                                                                            batch = next.value;
+                                                                            context = {
+                                                                                completedBatches: completed,
+                                                                                remainingBatches: this.batchCount - completed,
+                                                                            };
+                                                                            return [4 /*yield*/, handler(batch, context)];
+                                                                        case 1:
+                                                                            _a.sent();
+                                                                            resolve();
+                                                                            return [2 /*return*/];
+                                                                    }
+                                                                });
+                                                            }); }, _this.convert(interval));
+                                                        })];
+                                                case 1:
+                                                    _a.sent();
+                                                    if (++completed === this_1.batchCount) {
+                                                        return [2 /*return*/, "break"];
+                                                    }
+                                                    return [2 /*return*/];
+                                            }
+                                        });
+                                    };
+                                    this_1 = this;
+                                    _a.label = 1;
+                                case 1:
+                                    if (!true) return [3 /*break*/, 3];
+                                    return [5 /*yield**/, _loop_1()];
+                                case 2:
+                                    state_1 = _a.sent();
+                                    if (state_1 === "break")
+                                        return [3 /*break*/, 3];
+                                    return [3 /*break*/, 1];
+                                case 3:
+                                    resolve();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })];
             });
         });
     };
     ;
-    BatchedArray.prototype.batchedMapInterval = function (specifications) {
+    BatchedArray.prototype.batchedMapInterval = function (converter, interval) {
         return __awaiter(this, void 0, void 0, function () {
-            var batcher, converter, interval, collector, batches, quota;
+            var collector;
             var _this = this;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!this.length) {
-                            return [2 /*return*/, []];
-                        }
-                        batcher = specifications.batcher, converter = specifications.converter, interval = specifications.interval;
-                        collector = [];
-                        return [4 /*yield*/, this.batchAsync(batcher)];
-                    case 1:
-                        batches = _a.sent();
-                        quota = batches.length;
-                        return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-                                var iterator, completed, _loop_2, state_2;
-                                var _this = this;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0:
-                                            iterator = batches[Symbol.iterator]();
-                                            completed = 0;
-                                            _loop_2 = function () {
-                                                var next;
-                                                return __generator(this, function (_a) {
-                                                    switch (_a.label) {
-                                                        case 0:
-                                                            next = iterator.next();
-                                                            return [4 /*yield*/, new Promise(function (resolve) {
-                                                                    setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                                                                        var batch, context;
-                                                                        return __generator(this, function (_a) {
-                                                                            switch (_a.label) {
-                                                                                case 0:
-                                                                                    batch = next.value;
-                                                                                    context = {
-                                                                                        completedBatches: completed,
-                                                                                        remainingBatches: quota - completed,
-                                                                                    };
-                                                                                    return [4 /*yield*/, converter(batch, context)];
-                                                                                case 1:
-                                                                                    (_a.sent()).forEach(function (convert) { return collector.push(convert); });
-                                                                                    resolve();
-                                                                                    return [2 /*return*/];
-                                                                            }
-                                                                        });
-                                                                    }); }, _this.convert(interval));
-                                                                })];
-                                                        case 1:
-                                                            _a.sent();
-                                                            if (++completed === quota) {
-                                                                resolve(collector);
-                                                                return [2 /*return*/, "break"];
-                                                            }
-                                                            return [2 /*return*/];
-                                                    }
-                                                });
-                                            };
-                                            _a.label = 1;
-                                        case 1:
-                                            if (!true) return [3 /*break*/, 3];
-                                            return [5 /*yield**/, _loop_2()];
-                                        case 2:
-                                            state_2 = _a.sent();
-                                            if (state_2 === "break")
-                                                return [3 /*break*/, 3];
-                                            return [3 /*break*/, 1];
-                                        case 3: return [2 /*return*/];
-                                    }
-                                });
-                            }); })];
+                if (!this.batchCount) {
+                    return [2 /*return*/, []];
                 }
+                collector = [];
+                return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
+                        var iterator, completed, _loop_2, this_2, state_2;
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    iterator = this.batches[Symbol.iterator]();
+                                    completed = 0;
+                                    _loop_2 = function () {
+                                        var next;
+                                        return __generator(this, function (_a) {
+                                            switch (_a.label) {
+                                                case 0:
+                                                    next = iterator.next();
+                                                    return [4 /*yield*/, new Promise(function (resolve) {
+                                                            setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
+                                                                var batch, context;
+                                                                return __generator(this, function (_a) {
+                                                                    switch (_a.label) {
+                                                                        case 0:
+                                                                            batch = next.value;
+                                                                            context = {
+                                                                                completedBatches: completed,
+                                                                                remainingBatches: this.batchCount - completed,
+                                                                            };
+                                                                            return [4 /*yield*/, converter(batch, context)];
+                                                                        case 1:
+                                                                            (_a.sent()).forEach(function (convert) { return collector.push(convert); });
+                                                                            resolve();
+                                                                            return [2 /*return*/];
+                                                                    }
+                                                                });
+                                                            }); }, _this.convert(interval));
+                                                        })];
+                                                case 1:
+                                                    _a.sent();
+                                                    if (++completed === this_2.batchCount) {
+                                                        resolve(collector);
+                                                        return [2 /*return*/, "break"];
+                                                    }
+                                                    return [2 /*return*/];
+                                            }
+                                        });
+                                    };
+                                    this_2 = this;
+                                    _a.label = 1;
+                                case 1:
+                                    if (!true) return [3 /*break*/, 3];
+                                    return [5 /*yield**/, _loop_2()];
+                                case 2:
+                                    state_2 = _a.sent();
+                                    if (state_2 === "break")
+                                        return [3 /*break*/, 3];
+                                    return [3 /*break*/, 1];
+                                case 3: return [2 /*return*/];
+                            }
+                        });
+                    }); })];
             });
         });
     };
