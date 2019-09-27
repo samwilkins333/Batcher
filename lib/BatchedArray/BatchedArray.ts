@@ -37,14 +37,14 @@ export default class BatchedArray<T> {
         return this.batches[Symbol.iterator]();
     }
 
-    batchedForEach(handler: BatchHandlerSync<T> ): void {
+    batchedForEach(handler: BatchHandlerSync<T>): void {
         if (this.batchCount) {
             let completed = 0;
             for (let batch of this.batches) {
                 handler(batch, this.context(completed++));
             }
         }
-    };
+    }
 
     batchedMap<O>(converter: BatchConverterSync<T, O>): O[] {
         if (!this.batchCount) {
@@ -56,7 +56,7 @@ export default class BatchedArray<T> {
             converter(batch, this.context(completed++)).forEach(convert => collector.push(convert));
         }
         return collector;
-    };
+    }
 
     async batchedForEachAsync(handler: BatchHandlerAsync<T>): Promise<void> {
         if (this.batchCount) {
@@ -65,7 +65,7 @@ export default class BatchedArray<T> {
                 await handler(batch, this.context(completed++));
             }
         }
-    };
+    }
 
     async batchedMapAsync<O>(converter: BatchConverterAsync<T, O>): Promise<O[]> {
         if (!this.batchCount) {
@@ -78,7 +78,7 @@ export default class BatchedArray<T> {
             completed++;
         }
         return collector;
-    };
+    }
 
     private context(completed: number, patient = true): BatchContext {
         return {
@@ -111,7 +111,7 @@ export default class BatchedArray<T> {
                 resolve();
             });
         }
-    };
+    }
 
     async batchedForEachPatientInterval(interval: Interval.Instance, handler: BatchHandlerEither<T>): Promise<void> {
         if (this.batchCount) {
@@ -129,11 +129,11 @@ export default class BatchedArray<T> {
                             Interval.convert(interval)
                         );
                     });
-                } 
+                }
                 resolve();
             });
         }
-    };
+    }
 
     async batchedMapNaiveInterval<O>(interval: Interval.Instance, converter: BatchConverterEither<T, O>): Promise<O[]> {
         if (this.batchCount) {
@@ -160,7 +160,7 @@ export default class BatchedArray<T> {
             });
         }
         return [];
-    };
+    }
 
     async batchedMapPatientInterval<O>(interval: Interval.Instance, converter: BatchConverterEither<T, O>): Promise<O[]> {
         if (this.batchCount) {
@@ -179,11 +179,11 @@ export default class BatchedArray<T> {
                             Interval.convert(interval)
                         );
                     });
-                } 
+                }
                 resolve(collector);
             });
         }
         return [];
-    };
+    }
 
 }

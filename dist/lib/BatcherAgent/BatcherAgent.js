@@ -98,7 +98,6 @@ var BatcherAgent = /** @class */ (function () {
         }
         return batches;
     };
-    ;
     BatcherAgent.prototype.predicateBatch = function (batcher) {
         var batches = [];
         var batch = [];
@@ -119,7 +118,6 @@ var BatcherAgent = /** @class */ (function () {
         batches.push(batch);
         return batches;
     };
-    ;
     BatcherAgent.prototype.predicateBatchAsync = function (batcher) {
         return __awaiter(this, void 0, void 0, function () {
             var batches, batch, executorAsync, initial, accumulator, _i, _a, element, _b, updatedAccumulator, createNewBatch;
@@ -157,7 +155,6 @@ var BatcherAgent = /** @class */ (function () {
             });
         });
     };
-    ;
     BatcherAgent.prototype.batch = function (batcher) {
         if ("executor" in batcher) {
             return this.predicateBatch(batcher);
@@ -166,7 +163,6 @@ var BatcherAgent = /** @class */ (function () {
             return this.fixedBatch(batcher);
         }
     };
-    ;
     return BatcherAgent;
 }());
 exports.default = BatcherAgent;

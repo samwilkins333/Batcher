@@ -3,13 +3,13 @@ export type FixedBatcher = { batchSize: number } | { batchCount: number, mode?: 
 
 export interface PredicateBatcherSync<I, A> {
     initial: A;
-    executor: (element: I, accumulator: A) => ExecutorResult<A>
-};
+    executor: (element: I, accumulator: A) => ExecutorResult<A>;
+}
 
 export interface PredicateBatcherAsync<I, A> {
     initial: A;
-    executorAsync: (element: I, accumulator: A) => Promise<ExecutorResult<A>>
-};
+    executorAsync: (element: I, accumulator: A) => Promise<ExecutorResult<A>>;
+}
 
 export interface ExecutorResult<A> {
     updatedAccumulator: A;
@@ -19,4 +19,4 @@ export interface ExecutorResult<A> {
 export enum Mode {
     Balanced,
     Even
-};
+}

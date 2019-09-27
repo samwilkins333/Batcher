@@ -96,7 +96,6 @@ var BatchedArray = /** @class */ (function () {
             }
         }
     };
-    ;
     BatchedArray.prototype.batchedMap = function (converter) {
         if (!this.batchCount) {
             return [];
@@ -109,7 +108,6 @@ var BatchedArray = /** @class */ (function () {
         }
         return collector;
     };
-    ;
     BatchedArray.prototype.batchedForEachAsync = function (handler) {
         return __awaiter(this, void 0, void 0, function () {
             var completed, _i, _a, batch;
@@ -135,7 +133,6 @@ var BatchedArray = /** @class */ (function () {
             });
         });
     };
-    ;
     BatchedArray.prototype.batchedMapAsync = function (converter) {
         return __awaiter(this, void 0, void 0, function () {
             var collector, completed, _i, _a, batch;
@@ -165,7 +162,6 @@ var BatchedArray = /** @class */ (function () {
             });
         });
     };
-    ;
     BatchedArray.prototype.context = function (completed, patient) {
         if (patient === void 0) { patient = true; }
         return {
@@ -214,7 +210,6 @@ var BatchedArray = /** @class */ (function () {
             });
         });
     };
-    ;
     BatchedArray.prototype.batchedForEachPatientInterval = function (interval, handler) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -258,7 +253,6 @@ var BatchedArray = /** @class */ (function () {
             });
         });
     };
-    ;
     BatchedArray.prototype.batchedMapNaiveInterval = function (interval, converter) {
         return __awaiter(this, void 0, void 0, function () {
             var collector_1;
@@ -309,7 +303,6 @@ var BatchedArray = /** @class */ (function () {
             });
         });
     };
-    ;
     BatchedArray.prototype.batchedMapPatientInterval = function (interval, converter) {
         return __awaiter(this, void 0, void 0, function () {
             var collector_2;
@@ -359,7 +352,6 @@ var BatchedArray = /** @class */ (function () {
             });
         });
     };
-    ;
     return BatchedArray;
 }());
 exports.default = BatchedArray;

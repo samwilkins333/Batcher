@@ -52,7 +52,6 @@ function ThresholdBatcherSync(threshold, sizer, initial) {
     };
 }
 exports.ThresholdBatcherSync = ThresholdBatcherSync;
-;
 function ThresholdBatcherAsync(threshold, sizer, initial) {
     var _this = this;
     if (initial === void 0) { initial = 0; }
@@ -77,4 +76,3 @@ function ThresholdBatcherAsync(threshold, sizer, initial) {
     };
 }
 exports.ThresholdBatcherAsync = ThresholdBatcherAsync;
-;

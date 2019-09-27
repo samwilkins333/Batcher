@@ -12,8 +12,8 @@ export function ThresholdBatcherSync<T>(threshold: number, sizer: (element: T) =
             return { createNewBatch, updatedAccumulator: accumulator };
         },
         initial
-    }
-};
+    };
+}
 
 export function ThresholdBatcherAsync<T>(threshold: number, sizer: (element: T) => Promise<number>, initial = 0): PredicateBatcherAsync<T, number> {
     return {
@@ -27,5 +27,5 @@ export function ThresholdBatcherAsync<T>(threshold: number, sizer: (element: T) 
             return { createNewBatch, updatedAccumulator: accumulator };
         },
         initial
-    }
-};
+    };
+}

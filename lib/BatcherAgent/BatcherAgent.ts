@@ -33,9 +33,9 @@ export default class BatcherAgent<T> {
             if (batchCount >= length) {
                 return this.input.map(element => [element]);
             }
-    
+
             let size: number;
-    
+
             if (length % batchCount === 0) {
                 size = Math.floor(length / batchCount);
                 while (i < length) {
@@ -59,7 +59,7 @@ export default class BatcherAgent<T> {
             }
         }
         return batches;
-    };
+    }
 
     predicateBatch<A = undefined>(batcher: PredicateBatcherSync<T, A>): T[][] {
         const batches: T[][] = [];
@@ -78,7 +78,7 @@ export default class BatcherAgent<T> {
         }
         batches.push(batch);
         return batches;
-    };
+    }
 
     async predicateBatchAsync<A = undefined>(batcher: PredicateBatcherAsync<T, A>): Promise<T[][]> {
         const batches: T[][] = [];
@@ -97,7 +97,7 @@ export default class BatcherAgent<T> {
         }
         batches.push(batch);
         return batches;
-    };
+    }
 
     batch<A = undefined>(batcher: BatcherSync<T, A>): T[][] {
         if ("executor" in batcher) {
@@ -105,6 +105,6 @@ export default class BatcherAgent<T> {
         } else {
             return this.fixedBatch(batcher);
         }
-    };
+    }
 
 }
