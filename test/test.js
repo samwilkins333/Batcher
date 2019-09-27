@@ -1,10 +1,10 @@
 const expect = require('chai').expect;
-const BatchedArray = require("../dist/BatchedArray/BatchedArray").default;
-const BatcherAgent = require("../dist/BatcherAgent/BatcherAgent").default;
-const ThresholdAsync = require("../dist/BatcherAgent/BatcherAgents").ThresholdBatcherAsync;
-const Threshold = require("../dist/BatcherAgent/BatcherAgents").ThresholdBatcherSync;
+const BatchedArray = require("../dist/lib/BatchedArray/BatchedArray").default;
+const BatcherAgent = require("../dist/lib/BatcherAgent/BatcherAgent").default;
+const ThresholdAsync = require("../dist/lib/BatcherAgent/BatcherAgents").ThresholdBatcherAsync;
+const Threshold = require("../dist/lib/BatcherAgent/BatcherAgents").ThresholdBatcherSync;
 
-const TimeUnit = require("../dist/BatchedArray/Interval").TimeUnit;
+const TimeUnit = require("../dist/lib/BatchedArray/Interval").TimeUnit;
 
 const request = require("request-promise");
 
