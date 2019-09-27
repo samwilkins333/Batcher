@@ -24,6 +24,8 @@
     "dependencies": {
         "@types/node": "^12.7.5",
         "chai": "^4.2.0",
-        "mocha": "^6.2.0"
+        "mocha": "^6.2.0",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.4"
     }
 }
