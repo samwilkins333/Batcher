@@ -1,6 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var BatchedArray_1 = require("./lib/BatchedArray/BatchedArray");
+var BatchedArray_1 = require("./BatchedArray/BatchedArray");
 exports.BatchedArray = BatchedArray_1.default;
-var BatcherAgent_1 = require("./lib/BatcherAgent/BatcherAgent");
+var BatchedArrayTypes = require("./BatchedArray/Types");
+exports.BatchedArrayTypes = BatchedArrayTypes;
+var BatcherAgent_1 = require("./BatcherAgent/BatcherAgent");
 exports.BatcherAgent = BatcherAgent_1.default;
+var BatcherAgentTypes = require("./BatcherAgent/Types");
+exports.BatcherAgentTypes = BatcherAgentTypes;
+var BatcherAgents_1 = require("./BatcherAgent/BatcherAgents");
+exports.ThresholdBatcherSync = BatcherAgents_1.ThresholdBatcherSync;
+exports.ThresholdBatcherAsync = BatcherAgents_1.ThresholdBatcherAsync;
+var Interval_1 = require("./BatchedArray/Interval");
+exports.Interval = Interval_1.Interval;
+exports.TimeUnit = Interval_1.TimeUnit;
