@@ -1,0 +1,6 @@
+{
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": true,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+}
