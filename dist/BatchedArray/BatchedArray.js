@@ -183,6 +183,8 @@ var BatchedArray = /** @class */ (function () {
                                     case 0:
                                         iterator = this.batchIterator;
                                         dispatched = 0;
+                                        next = iterator.next();
+                                        handler(next.value, this.context(++dispatched, false));
                                         return [4 /*yield*/, new Promise(function (resolve) {
                                                 var handle = setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
                                                     return __generator(this, function (_a) {
@@ -223,9 +225,13 @@ var BatchedArray = /** @class */ (function () {
                                     case 0:
                                         iterator = this.batchIterator;
                                         completed = 0;
-                                        _a.label = 1;
+                                        next = iterator.next();
+                                        return [4 /*yield*/, handler(next.value, this.context(completed++))];
                                     case 1:
-                                        if (!!(next = iterator.next()).done) return [3 /*break*/, 3];
+                                        _a.sent();
+                                        _a.label = 2;
+                                    case 2:
+                                        if (!!(next = iterator.next()).done) return [3 /*break*/, 4];
                                         return [4 /*yield*/, new Promise(function (resolve) {
                                                 setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
                                                     return __generator(this, function (_a) {
@@ -239,10 +245,10 @@ var BatchedArray = /** @class */ (function () {
                                                     });
                                                 }); }, Interval_1.Interval.convert(interval));
                                             })];
-                                    case 2:
-                                        _a.sent();
-                                        return [3 /*break*/, 1];
                                     case 3:
+                                        _a.sent();
+                                        return [3 /*break*/, 2];
+                                    case 4:
                                         resolve();
                                         return [2 /*return*/];
                                 }
@@ -268,6 +274,21 @@ var BatchedArray = /** @class */ (function () {
                                     case 0:
                                         iterator = this.batchIterator;
                                         dispatched = 0;
+                                        next = iterator.next();
+                                        setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
+                                            var _a, _b, _c;
+                                            return __generator(this, function (_d) {
+                                                switch (_d.label) {
+                                                    case 0:
+                                                        _b = (_a = collector_1.push).apply;
+                                                        _c = [collector_1];
+                                                        return [4 /*yield*/, converter(next.value, this.context(++dispatched, false))];
+                                                    case 1:
+                                                        _b.apply(_a, _c.concat([(_d.sent())]));
+                                                        return [2 /*return*/];
+                                                }
+                                            });
+                                        }); }, 0);
                                         return [4 /*yield*/, new Promise(function (resolve) {
                                                 var handle = setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
                                                     var _a, _b, _c;
@@ -311,16 +332,22 @@ var BatchedArray = /** @class */ (function () {
                 if (this.batchCount) {
                     collector_2 = [];
                     return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-                            var iterator, completed, next;
+                            var iterator, completed, next, _a, _b, _c;
                             var _this = this;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
+                            return __generator(this, function (_d) {
+                                switch (_d.label) {
                                     case 0:
                                         iterator = this.batchIterator;
                                         completed = 0;
-                                        _a.label = 1;
+                                        next = iterator.next();
+                                        _b = (_a = collector_2.push).apply;
+                                        _c = [collector_2];
+                                        return [4 /*yield*/, converter(next.value, this.context(completed++))];
                                     case 1:
-                                        if (!!(next = iterator.next()).done) return [3 /*break*/, 3];
+                                        _b.apply(_a, _c.concat([(_d.sent())]));
+                                        _d.label = 2;
+                                    case 2:
+                                        if (!!(next = iterator.next()).done) return [3 /*break*/, 4];
                                         return [4 /*yield*/, new Promise(function (resolve) {
                                                 setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
                                                     var _a, _b, _c;
@@ -338,10 +365,10 @@ var BatchedArray = /** @class */ (function () {
                                                     });
                                                 }); }, Interval_1.Interval.convert(interval));
                                             })];
-                                    case 2:
-                                        _a.sent();
-                                        return [3 /*break*/, 1];
                                     case 3:
+                                        _d.sent();
+                                        return [3 /*break*/, 2];
+                                    case 4:
                                         resolve(collector_2);
                                         return [2 /*return*/];
                                 }

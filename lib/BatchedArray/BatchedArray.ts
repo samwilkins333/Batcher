@@ -93,7 +93,8 @@ export default class BatchedArray<T> {
             return new Promise<void>(async resolve => {
                 const iterator = this.batchIterator;
                 let dispatched = 0;
-                let next: IteratorResult<T[], T[]>;
+                let next = iterator.next();
+                handler(next.value, this.context(++dispatched, false));
                 await new Promise<void>(resolve => {
                     const handle = setInterval(
                         async () => {
@@ -118,7 +119,8 @@ export default class BatchedArray<T> {
             return new Promise<void>(async resolve => {
                 const iterator = this.batchIterator;
                 let completed = 0;
-                let next: IteratorResult<T[], T[]>;
+                let next = iterator.next();
+                await handler(next.value, this.context(completed++));
                 while (!(next = iterator.next()).done) {
                     await new Promise<void>(resolve => {
                         setTimeout(
@@ -141,7 +143,10 @@ export default class BatchedArray<T> {
             return new Promise<O[]>(async resolve => {
                 const iterator = this.batchIterator;
                 let dispatched = 0;
-                let next: IteratorResult<T[], T[]>;
+                let next = iterator.next();
+                setTimeout(async () => {
+                    collector.push(...(await converter(next.value, this.context(++dispatched, false))));
+                }, 0);
                 await new Promise<void>(resolve => {
                     const handle = setInterval(
                         async () => {
@@ -168,7 +173,8 @@ export default class BatchedArray<T> {
             return new Promise<O[]>(async resolve => {
                 const iterator = this.batchIterator;
                 let completed = 0;
-                let next: IteratorResult<T[], T[]>;
+                let next = iterator.next();
+                collector.push(...(await converter(next.value, this.context(completed++))));
                 while (!(next = iterator.next()).done) {
                     await new Promise<void>(resolve => {
                         setTimeout(

@@ -78,7 +78,7 @@ async function UploadDispatcherSimulator(threshold: number, expected: number, pa
     
     // Here, declare that you'd like to allocate three seconds between the execution of each batch,
     // as well as defining the callback to be invoked on each batch
-    // For example, the first batch will be passed into our handler after 3 seconds, then the second after 6 seconds
+    // For example, the first batch will be passed into our handler instantaneously, then the second after 3 seconds, etc.
     // (exact timing depends on strict vs. patient intervals)
     const interval: Interval.Instance = { magnitude: 3, unit: TimeUnit.Seconds };
     const handler = async animals => {
@@ -135,33 +135,34 @@ ExecuteUploadSimulations()
 ```sh
 Where ~ denotes approximately, output should be:
 
+
 PATIENT
 
 Patient test with a 1 megabyte threshold!
-Dispatching upload for Cow,Sparrow,Shark at ~3006 ms
+Dispatching upload for Cow,Sparrow,Shark at ~1 ms
 
 Patient test with a 500 kilobyte threshold!
-Dispatching upload for Cow,Sparrow at ~3002 ms
-Dispatching upload for Shark at ~7212 ms
+Dispatching upload for Cow,Sparrow at ~0 ms
+Dispatching upload for Shark at ~4454 ms
 
 Patient test with a 200 kilobyte threshold!
-Dispatching upload for Cow at ~3005 ms
-Dispatching upload for Sparrow at ~7706 ms
-Dispatching upload for Shark at ~12152 ms
+Dispatching upload for Cow at ~0 ms
+Dispatching upload for Sparrow at ~4732 ms
+Dispatching upload for Shark at ~9183 ms
 
 STRICT
 
 Strict test with a 1 megabyte threshold!
-Dispatching upload for Cow,Sparrow,Shark at ~3002 ms
+Dispatching upload for Cow,Sparrow,Shark at ~0 ms
 
 Strict test with a 500 kilobyte threshold!
-Dispatching upload for Cow,Sparrow at ~3005 ms
-Dispatching upload for Shark at ~6009 ms
+Dispatching upload for Cow,Sparrow at ~0 ms
+Dispatching upload for Shark at ~3004 ms
 
 Strict test with a 200 kilobyte threshold!
-Dispatching upload for Cow at ~3006 ms
-Dispatching upload for Sparrow at ~6009 ms
-Dispatching upload for Shark at ~9015 ms
+Dispatching upload for Cow at ~0 ms
+Dispatching upload for Sparrow at ~3003 ms
+Dispatching upload for Shark at ~6007 ms
 
 ```
 ## Test 
