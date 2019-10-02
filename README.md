@@ -135,7 +135,6 @@ ExecuteUploadSimulations()
 ```sh
 Where ~ denotes approximately, output should be:
 
-
 PATIENT
 
 Patient test with a 1 megabyte threshold!
