@@ -1,6 +1,6 @@
 {
     "name": "array-batcher",
-    "version": "1.1.6",
+    "version": "1.1.7",
     "description": "Execute operations on or mapping conversions of JavaScript Arrays in predetermined batches. Batches can be of a fixed size, created from a desired number of batches, or constructed by iterating through the array and testing a predicate.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
