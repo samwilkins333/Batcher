@@ -170,7 +170,7 @@ var BatchedArray = /** @class */ (function () {
             patient: patient
         };
     };
-    BatchedArray.prototype.batchedForEachNaiveInterval = function (interval, handler) {
+    BatchedArray.prototype.batchedForEachStrictInterval = function (interval, handler) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -253,7 +253,7 @@ var BatchedArray = /** @class */ (function () {
             });
         });
     };
-    BatchedArray.prototype.batchedMapNaiveInterval = function (interval, converter) {
+    BatchedArray.prototype.batchedMapStrictInterval = function (interval, converter) {
         return __awaiter(this, void 0, void 0, function () {
             var collector_1;
             var _this = this;

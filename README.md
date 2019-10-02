@@ -13,7 +13,8 @@ const batched = new BatcherAgent(["this", "is", "not", "a", "test"]).fixedBatch(
 console.log(batched);
 ```
 ```sh
-Output should be [["this", "is"], ["not", "a"], ["test"]]
+Output should be:
+[["this", "is"], ["not", "a"], ["test"]]
 ```
 ### TypeScript
 ```typescript
@@ -27,7 +28,7 @@ async function UploadDispatcherSimulator(threshold: number, expected: number, pa
     const sparrow = { name: "Sparrow", weight: 0.0625, lifespan: 3, image: "https://www.thespruce.com/thmb/X31KQaI5ttNpFE9ho8JLrJj258A=/1500x1000/filters:no_upscale():max_bytes(150000):strip_icc()/eurasian-tree-sparrow-5a11f1630d327a00367c025a.jpg" };
     const shark = { name: "Shark", weight: 2400, lifespan: 30, image: "https://cbsnews1.cbsistatic.com/hub/i/2012/09/03/23633c73-a645-11e2-a3f0-029118418759/greatwhiteshark.jpg" };
 
-    // let's say we're uploading these images to an API that can only process 5 megabytes per request
+    // imagine uploading these images to an API that can only process a certain number of kilobytes or megabytes per request
     const target = await BatchedArray.fromAsync([cow, sparrow, shark], ThresholdAsync(threshold, async animal => {
         const metadata = await new Promise((resolve, reject) => {
             request.head(animal.image, (error, response) => {
@@ -47,10 +48,11 @@ async function UploadDispatcherSimulator(threshold: number, expected: number, pa
         await wait(1000 * (1 + Math.random()));
     };
     if (patient) {
-        // wait for each upload to have finished: best for limited size per time
+        // wait for each upload to have finished: best if, say, overdrawing server resources at any one time is a concern
         await target.batchedForEachPatientInterval(interval, handler);    
     } else {
-        // dispatch naively at the given interval: best for limited number of queries per time
+        // dispatch naively at the given interval: best for scheduling UI events or requests where
+        // one does not care whether or not the previous event, request, etc. has completed
         await target.batchedForEachNaiveInterval(interval, handler);   
     }
 }
@@ -81,9 +83,11 @@ async function ExecuteUploadSimulations() {
     await UploadDispatcherSimulator(0.2 * megabytes, 3, false);
 }
 
+ExecuteUploadSimulations()
+
 ```
 ```sh
-Output should* be
+Barring natural variations in benchmark timings, output should be:
 
 PATIENT
 
@@ -113,7 +117,6 @@ Dispatching upload for Cow at ~3006 ms
 Dispatching upload for Sparrow at ~6009 ms
 Dispatching upload for Shark at ~9015 ms
 
-*~ denotes natural variation in benchmark estimates
 ```
 ## Test 
 ```sh

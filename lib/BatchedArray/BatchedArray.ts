@@ -88,7 +88,7 @@ export default class BatchedArray<T> {
         };
     }
 
-    async batchedForEachNaiveInterval(interval: Interval.Instance, handler: BatchHandlerEither<T>): Promise<void> {
+    async batchedForEachStrictInterval(interval: Interval.Instance, handler: BatchHandlerEither<T>): Promise<void> {
         if (this.batchCount) {
             return new Promise<void>(async resolve => {
                 const iterator = this.batchIterator;
@@ -135,7 +135,7 @@ export default class BatchedArray<T> {
         }
     }
 
-    async batchedMapNaiveInterval<O>(interval: Interval.Instance, converter: BatchConverterEither<T, O>): Promise<O[]> {
+    async batchedMapStrictInterval<O>(interval: Interval.Instance, converter: BatchConverterEither<T, O>): Promise<O[]> {
         if (this.batchCount) {
             const collector: O[] = [];
             return new Promise<O[]>(async resolve => {

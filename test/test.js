@@ -159,7 +159,7 @@ describe('predicate batching test', () => {
             await target.batchedForEachPatientInterval(interval, handler);
         } else {
             // dispatch naively at the given interval: best for limited number of queries per time
-            await target.batchedForEachNaiveInterval(interval, handler);
+            await target.batchedForEachStrictInterval(interval, handler);
         }
     }
 

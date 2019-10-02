@@ -15,8 +15,8 @@ export default class BatchedArray<T> {
     batchedForEachAsync(handler: BatchHandlerAsync<T>): Promise<void>;
     batchedMapAsync<O>(converter: BatchConverterAsync<T, O>): Promise<O[]>;
     private context;
-    batchedForEachNaiveInterval(interval: Interval.Instance, handler: BatchHandlerEither<T>): Promise<void>;
+    batchedForEachStrictInterval(interval: Interval.Instance, handler: BatchHandlerEither<T>): Promise<void>;
     batchedForEachPatientInterval(interval: Interval.Instance, handler: BatchHandlerEither<T>): Promise<void>;
-    batchedMapNaiveInterval<O>(interval: Interval.Instance, converter: BatchConverterEither<T, O>): Promise<O[]>;
+    batchedMapStrictInterval<O>(interval: Interval.Instance, converter: BatchConverterEither<T, O>): Promise<O[]>;
     batchedMapPatientInterval<O>(interval: Interval.Instance, converter: BatchConverterEither<T, O>): Promise<O[]>;
 }
