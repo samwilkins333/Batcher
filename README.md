@@ -83,7 +83,7 @@ async function UploadDispatcherSimulator(threshold: number, expected: number, pa
     const interval: Interval.Instance = { magnitude: 3, unit: TimeUnit.Seconds };
     const handler = async animals => {
         console.log(`Dispatching upload for ${animals.map(animal => animal.name)} at ${benchmark(reference)} ms`);
-        // Simulates the time take to receive a response from the remote server
+        // Simulates the time taken to receive a response from the remote server
         // Note that it has no bearing on the strict benchmarks, but a fair effect on the patient
         await wait(1000 * (1 + Math.random()));
     };
@@ -117,15 +117,15 @@ async function ExecuteUploadSimulations() {
     console.log(`\nPatient test with a 200 kilobyte threshold!`);
     await UploadDispatcherSimulator(0.2 * megabytes, 3);
 
-    console.log("\nNAIVE");
+    console.log("\nSTRICT");
 
-    console.log(`\nNaive test with a 1 megabyte threshold!`);
+    console.log(`\nStrict test with a 1 megabyte threshold!`);
     await UploadDispatcherSimulator(1 * megabytes, 1, false);
 
-    console.log(`\nNaive test with a 500 kilobyte threshold!`);
+    console.log(`\nStrict test with a 500 kilobyte threshold!`);
     await UploadDispatcherSimulator(0.5 * megabytes, 2, false);
 
-    console.log(`\nNaive test with a 200 kilobyte threshold!`);
+    console.log(`\nStrict test with a 200 kilobyte threshold!`);
     await UploadDispatcherSimulator(0.2 * megabytes, 3, false);
 }
 
@@ -149,16 +149,16 @@ Dispatching upload for Cow at ~3005 ms
 Dispatching upload for Sparrow at ~7706 ms
 Dispatching upload for Shark at ~12152 ms
 
-NAIVE
+STRICT
 
-Naive test with a 1 megabyte threshold!
+Strict test with a 1 megabyte threshold!
 Dispatching upload for Cow,Sparrow,Shark at ~3002 ms
 
-Naive test with a 500 kilobyte threshold!
+Strict test with a 500 kilobyte threshold!
 Dispatching upload for Cow,Sparrow at ~3005 ms
 Dispatching upload for Shark at ~6009 ms
 
-Naive test with a 200 kilobyte threshold!
+Strict test with a 200 kilobyte threshold!
 Dispatching upload for Cow at ~3006 ms
 Dispatching upload for Sparrow at ~6009 ms
 Dispatching upload for Shark at ~9015 ms

@@ -100,15 +100,15 @@ describe('predicate batching test', () => {
         console.log(`\nPatient test with a 200 kilobyte threshold!`);
         await UploadDispatcherSimulator(0.2 * megabytes, 3);
 
-        console.log("\nNAIVE");
+        console.log("\nSTRICT");
 
-        console.log(`\nNaive test with a 1 megabyte threshold!`);
+        console.log(`\nStrict test with a 1 megabyte threshold!`);
         await UploadDispatcherSimulator(1 * megabytes, 1, false);
 
-        console.log(`\nNaive test with a 500 kilobyte threshold!`);
+        console.log(`\nStrict test with a 500 kilobyte threshold!`);
         await UploadDispatcherSimulator(0.5 * megabytes, 2, false);
 
-        console.log(`\nNaive test with a 200 kilobyte threshold!`);
+        console.log(`\nStrict test with a 200 kilobyte threshold!`);
         await UploadDispatcherSimulator(0.2 * megabytes, 3, false);
     });
 
