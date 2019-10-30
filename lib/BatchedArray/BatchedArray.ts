@@ -77,7 +77,7 @@ export default class BatchedArray<T> {
         let completed = 0;
         for (let batch of this.batches) {
             const results: O[] = [];
-            await converter(batch, [] as O[], this.context(completed++));
+            await converter(batch, results, this.context(completed++));
             collector.push(...results);
         }
         return collector;
