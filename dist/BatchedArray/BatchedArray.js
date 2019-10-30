@@ -152,7 +152,7 @@ var BatchedArray = /** @class */ (function () {
                         if (!(_i < _a.length)) return [3 /*break*/, 4];
                         batch = _a[_i];
                         results = [];
-                        return [4 /*yield*/, converter(batch, [], this.context(completed++))];
+                        return [4 /*yield*/, converter(batch, results, this.context(completed++))];
                     case 2:
                         _b.sent();
                         collector.push.apply(collector, results);
