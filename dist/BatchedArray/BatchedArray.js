@@ -104,7 +104,9 @@ var BatchedArray = /** @class */ (function () {
         var completed = 0;
         for (var _i = 0, _a = this.batches; _i < _a.length; _i++) {
             var batch = _a[_i];
-            converter(batch, this.context(completed++)).forEach(function (convert) { return collector.push(convert); });
+            var results = [];
+            converter(batch, results, this.context(completed++));
+            collector.push.apply(collector, results);
         }
         return collector;
     };
@@ -135,7 +137,7 @@ var BatchedArray = /** @class */ (function () {
     };
     BatchedArray.prototype.batchedMapAsync = function (converter) {
         return __awaiter(this, void 0, void 0, function () {
-            var collector, completed, _i, _a, batch;
+            var collector, completed, _i, _a, batch, results;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -149,10 +151,11 @@ var BatchedArray = /** @class */ (function () {
                     case 1:
                         if (!(_i < _a.length)) return [3 /*break*/, 4];
                         batch = _a[_i];
-                        return [4 /*yield*/, converter(batch, this.context(completed++))];
+                        results = [];
+                        return [4 /*yield*/, converter(batch, [], this.context(completed++))];
                     case 2:
-                        (_b.sent()).forEach(function (convert) { return collector.push(convert); });
-                        completed++;
+                        _b.sent();
+                        collector.push.apply(collector, results);
                         _b.label = 3;
                     case 3:
                         _i++;
@@ -276,37 +279,37 @@ var BatchedArray = /** @class */ (function () {
                                         dispatched = 0;
                                         next = iterator.next();
                                         setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                                            var _a, _b, _c;
-                                            return __generator(this, function (_d) {
-                                                switch (_d.label) {
+                                            var results;
+                                            return __generator(this, function (_a) {
+                                                switch (_a.label) {
                                                     case 0:
-                                                        _b = (_a = collector_1.push).apply;
-                                                        _c = [collector_1];
-                                                        return [4 /*yield*/, converter(next.value, this.context(++dispatched, false))];
+                                                        results = [];
+                                                        return [4 /*yield*/, converter(next.value, results, this.context(++dispatched, false))];
                                                     case 1:
-                                                        _b.apply(_a, _c.concat([(_d.sent())]));
+                                                        _a.sent();
+                                                        collector_1.push.apply(collector_1, results);
                                                         return [2 /*return*/];
                                                 }
                                             });
                                         }); }, 0);
                                         return [4 /*yield*/, new Promise(function (resolve) {
                                                 var handle = setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
-                                                    var _a, _b, _c;
-                                                    return __generator(this, function (_d) {
-                                                        switch (_d.label) {
+                                                    var results;
+                                                    return __generator(this, function (_a) {
+                                                        switch (_a.label) {
                                                             case 0:
                                                                 next = iterator.next();
                                                                 if (!!next.done) return [3 /*break*/, 2];
-                                                                _b = (_a = collector_1.push).apply;
-                                                                _c = [collector_1];
-                                                                return [4 /*yield*/, converter(next.value, this.context(++dispatched, false))];
+                                                                results = [];
+                                                                return [4 /*yield*/, converter(next.value, results, this.context(++dispatched, false))];
                                                             case 1:
-                                                                _b.apply(_a, _c.concat([(_d.sent())]));
+                                                                _a.sent();
+                                                                collector_1.push.apply(collector_1, results);
                                                                 return [3 /*break*/, 3];
                                                             case 2:
                                                                 clearInterval(handle);
                                                                 resolve();
-                                                                _d.label = 3;
+                                                                _a.label = 3;
                                                             case 3: return [2 /*return*/];
                                                         }
                                                     });
@@ -332,33 +335,33 @@ var BatchedArray = /** @class */ (function () {
                 if (this.batchCount) {
                     collector_2 = [];
                     return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-                            var iterator, completed, next, _a, _b, _c;
+                            var iterator, completed, next, results;
                             var _this = this;
-                            return __generator(this, function (_d) {
-                                switch (_d.label) {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
                                     case 0:
                                         iterator = this.batchIterator;
                                         completed = 0;
                                         next = iterator.next();
-                                        _b = (_a = collector_2.push).apply;
-                                        _c = [collector_2];
-                                        return [4 /*yield*/, converter(next.value, this.context(completed++))];
+                                        results = [];
+                                        return [4 /*yield*/, converter(next.value, results, this.context(completed++))];
                                     case 1:
-                                        _b.apply(_a, _c.concat([(_d.sent())]));
-                                        _d.label = 2;
+                                        _a.sent();
+                                        collector_2.push.apply(collector_2, results);
+                                        _a.label = 2;
                                     case 2:
                                         if (!!(next = iterator.next()).done) return [3 /*break*/, 4];
                                         return [4 /*yield*/, new Promise(function (resolve) {
                                                 setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                                                    var _a, _b, _c;
-                                                    return __generator(this, function (_d) {
-                                                        switch (_d.label) {
+                                                    var results;
+                                                    return __generator(this, function (_a) {
+                                                        switch (_a.label) {
                                                             case 0:
-                                                                _b = (_a = collector_2.push).apply;
-                                                                _c = [collector_2];
-                                                                return [4 /*yield*/, converter(next.value, this.context(completed++))];
+                                                                results = [];
+                                                                return [4 /*yield*/, converter(next.value, results, this.context(completed++))];
                                                             case 1:
-                                                                _b.apply(_a, _c.concat([(_d.sent())]));
+                                                                _a.sent();
+                                                                collector_2.push.apply(collector_2, results);
                                                                 resolve();
                                                                 return [2 /*return*/];
                                                         }
@@ -366,7 +369,7 @@ var BatchedArray = /** @class */ (function () {
                                                 }); }, Interval_1.Interval.convert(interval));
                                             })];
                                     case 3:
-                                        _d.sent();
+                                        _a.sent();
                                         return [3 /*break*/, 2];
                                     case 4:
                                         resolve(collector_2);

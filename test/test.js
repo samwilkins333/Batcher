@@ -11,30 +11,27 @@ const request = require("request-promise");
 describe("batchedMap function test", () => {
 
     it("should return mapped string array", () => {
-        const target = BatchedArray.from(["hello", "world", "hope", "you're", "listening"], {
+        const source = ["hello", "world", "hope", "you're", "listening"];
+        const target = BatchedArray.from(source, {
             batchSize: 2
         });
-        const results = target.batchedMap((words, context) => {
-            const {
-                completedBatches,
-                remainingBatches
-            } = context;
-            return words.map(word => `(${word}) @ ${completedBatches}, ${remainingBatches}`);
-        });
+        const results = target.batchedMap((words, output, {
+            completedBatches,
+            remainingBatches
+        }) => words.forEach(word => output.push(`(${word}) @ ${completedBatches}, ${remainingBatches}`)));
         expect(results[2]).to.equal("(hope) @ 1, 2");
         expect(results.length).to.equal(target.elementCount);
     });
 
     it("should return a mapped string array", () => {
-        const target = BatchedArray.from([1, 2, 3, 4, 5, 6, 7, 8, 9], {
+        const source = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const target = BatchedArray.from(source, {
             batchCount: 4
         });
-        const results = target.batchedMap(batch => {
-            const output = [];
+        const results = target.batchedMap((batch, output) => {
             for (let element of batch) {
                 output.push(`I, (${element}), AM A NUMBER!`);
             }
-            return output;
         });
         expect(results[2]).to.equal("I, (3), AM A NUMBER!");
         expect(results.length).to.equal(target.elementCount);

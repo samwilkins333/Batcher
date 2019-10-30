@@ -4,12 +4,13 @@ export interface BatchContext {
     remainingBatches: number;
 }
 
-type BatchFunction<I, R> = (batch: I[], context: BatchContext) => R;
+type BatchForEachFunction<I, R> = (batch: I[], context: BatchContext) => R;
+type BatchMapFunction<I, O, R> = (batch: I[], collector: O[], context: BatchContext) => R;
 
-export type BatchConverterSync<I, O> = BatchFunction<I, O[]>;
-export type BatchConverterAsync<I, O> = BatchFunction<I, Promise<O[]>>;
-export type BatchConverterEither<I, O> = BatchFunction<I, O[] | Promise<O[]>>;
+export type BatchConverterSync<I, O> = BatchMapFunction<I, O, void>;
+export type BatchConverterAsync<I, O> = BatchMapFunction<I, O, Promise<void>>;
+export type BatchConverterEither<I, O> = BatchMapFunction<I, O, void | Promise<void>>;
 
-export type BatchHandlerSync<I> = BatchFunction<I, void>;
-export type BatchHandlerAsync<I> = BatchFunction<I, Promise<void>>;
-export type BatchHandlerEither<I> = BatchFunction<I, void | Promise<void>>;
+export type BatchHandlerSync<I> = BatchForEachFunction<I, void>;
+export type BatchHandlerAsync<I> = BatchForEachFunction<I, Promise<void>>;
+export type BatchHandlerEither<I> = BatchForEachFunction<I, void | Promise<void>>;

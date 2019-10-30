@@ -53,7 +53,9 @@ export default class BatchedArray<T> {
         let collector: O[] = [];
         let completed = 0;
         for (let batch of this.batches) {
-            converter(batch, this.context(completed++)).forEach(convert => collector.push(convert));
+            const results: O[] = [];
+            converter(batch, results, this.context(completed++));
+            collector.push(...results);
         }
         return collector;
     }
@@ -74,8 +76,9 @@ export default class BatchedArray<T> {
         let collector: O[] = [];
         let completed = 0;
         for (let batch of this.batches) {
-            (await converter(batch, this.context(completed++))).forEach(convert => collector.push(convert));
-            completed++;
+            const results: O[] = [];
+            await converter(batch, [] as O[], this.context(completed++));
+            collector.push(...results);
         }
         return collector;
     }
@@ -145,14 +148,18 @@ export default class BatchedArray<T> {
                 let dispatched = 0;
                 let next = iterator.next();
                 setTimeout(async () => {
-                    collector.push(...(await converter(next.value, this.context(++dispatched, false))));
+                    const results: O[] = [];
+                    await converter(next.value, results, this.context(++dispatched, false))
+                    collector.push(...results);
                 }, 0);
                 await new Promise<void>(resolve => {
                     const handle = setInterval(
                         async () => {
                             next = iterator.next();
                             if (!next.done) {
-                                collector.push(...(await converter(next.value, this.context(++dispatched, false))));
+                                const results: O[] = [];
+                                await converter(next.value, results, this.context(++dispatched, false));
+                                collector.push(...results);
                             } else {
                                 clearInterval(handle);
                                 resolve();
@@ -174,12 +181,16 @@ export default class BatchedArray<T> {
                 const iterator = this.batchIterator;
                 let completed = 0;
                 let next = iterator.next();
-                collector.push(...(await converter(next.value, this.context(completed++))));
+                const results: O[] = [];
+                await converter(next.value, results, this.context(completed++));
+                collector.push(...results);
                 while (!(next = iterator.next()).done) {
                     await new Promise<void>(resolve => {
                         setTimeout(
                             async () => {
-                                collector.push(...(await converter(next.value, this.context(completed++))));
+                                const results: O[] = [];
+                                await converter(next.value, results, this.context(completed++));
+                                collector.push(...results);
                                 resolve();
                             },
                             Interval.convert(interval)

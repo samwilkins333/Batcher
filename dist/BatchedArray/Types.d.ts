@@ -3,11 +3,12 @@ export interface BatchContext {
     completedBatches: number;
     remainingBatches: number;
 }
-declare type BatchFunction<I, R> = (batch: I[], context: BatchContext) => R;
-export declare type BatchConverterSync<I, O> = BatchFunction<I, O[]>;
-export declare type BatchConverterAsync<I, O> = BatchFunction<I, Promise<O[]>>;
-export declare type BatchConverterEither<I, O> = BatchFunction<I, O[] | Promise<O[]>>;
-export declare type BatchHandlerSync<I> = BatchFunction<I, void>;
-export declare type BatchHandlerAsync<I> = BatchFunction<I, Promise<void>>;
-export declare type BatchHandlerEither<I> = BatchFunction<I, void | Promise<void>>;
+declare type BatchForEachFunction<I, R> = (batch: I[], context: BatchContext) => R;
+declare type BatchMapFunction<I, O, R> = (batch: I[], collector: O[], context: BatchContext) => R;
+export declare type BatchConverterSync<I, O> = BatchMapFunction<I, O, void>;
+export declare type BatchConverterAsync<I, O> = BatchMapFunction<I, O, Promise<void>>;
+export declare type BatchConverterEither<I, O> = BatchMapFunction<I, O, void | Promise<void>>;
+export declare type BatchHandlerSync<I> = BatchForEachFunction<I, void>;
+export declare type BatchHandlerAsync<I> = BatchForEachFunction<I, Promise<void>>;
+export declare type BatchHandlerEither<I> = BatchForEachFunction<I, void | Promise<void>>;
 export {};
